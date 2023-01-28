@@ -1,4 +1,5 @@
 from math import log
+from sympy import Eq, nsolve, symbols
 import numpy as np
 
 def get_n_from_compound(m, c, r, b):
@@ -15,9 +16,15 @@ def get_b_from_compound(m, c, r, n):
     m : target value
     c : initial money value
     r : interest rate
-    n : number of periods 
+    n : number of periods
     """
     return (m - c*(r+1)**(n-1))/((r+1)**n - (r+1))*r
+
+def get_r_from_compound(m, c, b, n):
+    y = symbols('x')
+    eq1 = Eq(c*(x+1)**(n-1) + b/x*((x+1)**n-(x+1))-m, 0)
+    sol = nsolve(eq1, 0.1)
+    return sol
 
 def get_r(start, end, period=1):
     """
@@ -39,7 +46,7 @@ def compound(c, r, b, n):
 def compound_recursive(a, r, b, n):
     if n == 1:
         return a*r + a
-    
+
     prev = compound_recursive(a, n-1, r, b)
     newinv = prev + b
     return r*(newinv) + newinv
